@@ -1,4 +1,3 @@
-
 import { NoiseNode } from "./noise-node.js";
 
 Vue.use(VueMaterial.default)
@@ -12,6 +11,8 @@ new Vue({
 		peak: 0.0,
 		waveType: "pseudoAudio",
 		offset10dB: false, // F3E, F1E, G1E のときは 正弦波に対して +10dB の音声入力が必要
+		customFreqMode: false,
+		customFreq: 350, // 追加: 初期値を350Hzに
 	},
 
 	methods: {
@@ -158,22 +159,27 @@ new Vue({
 			this.oscillatorGain.gain.value = 0;
 			this.pseudoAudioGain.gain.value = 0;
 			this.whitenoiseGain.gain.value = 0;
-			switch (this.waveType) {
-				case "sine1000Hz":
-					this.oscillatorNode.frequency.value = 1000;
-					this.oscillatorGain.gain.value = Math.sqrt(2);
-					break;
-				case "sine1500Hz":
-					this.oscillatorNode.frequency.value = 1500;
-					this.oscillatorGain.gain.value = Math.sqrt(2);
-					break;
-				case "pseudoAudio":
-					this.pseudoAudioGain.gain.value = 6.666;
-					console.log(this.pseudoAudioGain.gain.value);
-					break;
-				case "whitenoise":
-					this.whitenoiseGain.gain.value = 1;
-					break;
+
+			if (this.customFreqMode) {
+				this.oscillatorNode.frequency.value = this.customFreq;
+				this.oscillatorGain.gain.value = Math.sqrt(2);
+			} else {
+				switch (this.waveType) {
+					case "sine1000Hz":
+						this.oscillatorNode.frequency.value = 1000;
+						this.oscillatorGain.gain.value = Math.sqrt(2);
+						break;
+					case "sine1500Hz":
+						this.oscillatorNode.frequency.value = 1500;
+						this.oscillatorGain.gain.value = Math.sqrt(2);
+						break;
+					case "pseudoAudio":
+						this.pseudoAudioGain.gain.value = 6.666;
+						break;
+					case "whitenoise":
+						this.whitenoiseGain.gain.value = 1;
+						break;
+				}
 			}
 			this.outGain.gain.value = this.gainValueRate;
 			this.offset10dBGain.gain.value = this.offset10dB ? Math.pow(10, 10 / 20) : 1;
@@ -193,17 +199,11 @@ new Vue({
 	mounted: async function () {
 		this.coeffsPromise = (await fetch('./coeffs.json')).json();
 
-		this.$watch('gainValue', (n) => {
-			this.applySetting();
-		});
-
-		this.$watch('waveType', () => {
-			this.applySetting();
-		});
-
-		this.$watch('offset10dB', () => {
-			this.applySetting();
-		});
+		this.$watch('gainValue', () => { this.applySetting(); });
+		this.$watch('waveType', () => { this.applySetting(); });
+		this.$watch('offset10dB', () => { this.applySetting(); });
+		this.$watch('customFreqMode', () => { this.applySetting(); });
+		this.$watch('customFreq', () => { this.applySetting(); }); // 追加
 	},
 })
 

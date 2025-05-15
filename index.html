@@ -6,14 +6,14 @@
 
 		<title>試験用 疑似音声発生器</title>
 
-		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
 		<link rel="stylesheet" href="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.css">
 		<link rel="stylesheet" href="https://unpkg.com/vue-material@1.0.0-beta-15/dist/theme/default.css">
 		<script src="https://unpkg.com/vue@2.6.14"></script>
 		<script src="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.js"></script>
 
 		<link rev="made" href="mailto:cho45@lowreal.net"/>
-		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+		<!-- <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/> -->
 		<style>
 			#app {
 				max-width: 600px;
@@ -31,6 +31,17 @@
 				position: absolute;
 				width: 100%;
 				height: 100%;
+			}
+
+			/* ラジオボタンを折り返す */
+			.md-field {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+			}
+			.md-field .md-radio {
+				margin-right: 12px;
+				margin-bottom: 4px;
 			}
 		</style>
 	</head>
@@ -53,12 +64,22 @@
 					</p>
 
 					<p>
-					<md-radio v-model="waveType" value="sine1000Hz">1000Hz 正弦波</md-radio>
-					<md-radio v-model="waveType" value="sine1500Hz">1500Hz 正弦波</md-radio>
-					<md-radio v-model="waveType" value="pseudoAudio">疑似音声</md-radio>
-					<md-radio v-model="waveType" value="whitenoise">ホワイトノイズ</md-radio>
+					  <md-radio v-model="waveType" value="sine1000Hz" :disabled="customFreqMode">1000Hz 正弦波</md-radio>
+					  <md-radio v-model="waveType" value="sine1500Hz" :disabled="customFreqMode">1500Hz 正弦波</md-radio>
+					  <md-radio v-model="waveType" value="pseudoAudio" :disabled="customFreqMode">疑似音声</md-radio>
+					  <md-radio v-model="waveType" value="whitenoise" :disabled="customFreqMode">ホワイトノイズ</md-radio>
 					</p>
 
+					<md-switch v-model="customFreqMode">Advanced</md-switch>
+					<md-field v-if="customFreqMode">
+					  <label>周波数を選択</label>
+					  <md-radio v-for="f in [350,440,550,700,880,1100,1400,1750,2200,2500]" 
+					            :key="f" 
+					            v-model="customFreq" 
+					            :value="f">
+					    {{f}} Hz
+					  </md-radio>
+					</md-field>
 
 					<p>
 					rate: {{gainValueRate}}<br />
