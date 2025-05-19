@@ -73,7 +73,7 @@
 					<md-switch v-model="customFreqMode">Advanced</md-switch>
 					<md-field v-if="customFreqMode">
 					  <label>周波数を選択</label>
-					  <md-radio v-for="f in [300,500,700,1000,2000,300]" 
+					  <md-radio v-for="f in [300,500,700,1000,2000,3000]" 
 					            :key="f" 
 					            v-model="customFreq" 
 					            :value="f">
